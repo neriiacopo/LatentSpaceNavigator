@@ -1,0 +1,26 @@
+body,
+#root {
+    font-family: Manrope;
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(45deg, #000000, #222222);
+}
+
+#info {
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    left: 0;
+    margin: 25px;
+    padding: 25px;
+    width: 15vw;
+
+    color: whitesmoke;
+    border-radius: 25px;
+    background-color: rgba(50, 50, 50, 0.4);
+    border: 1px solid #333333;
+    box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+}
