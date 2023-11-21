@@ -13,7 +13,7 @@ export default function Info() {
 
     return (
         <>
-            <div id="info">
+            <div class="info" id="info">
                 <h1>info</h1>
                 <div style={infoS}>
                     <h3>position </h3>

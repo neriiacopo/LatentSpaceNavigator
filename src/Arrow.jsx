@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { useStore } from "./store/useStore";
 import * as THREE from "three";
 
-export default function Arrow({ position, direction, color, scale }) {
+export default function Arrow({ position, direction, color, colorname, oldpos, scale }) {
     const [hovered, setHovered] = useState(false);
     const lineRef = useRef(null);
     const coneRef = useRef(null);
@@ -17,6 +17,8 @@ export default function Arrow({ position, direction, color, scale }) {
     function movePivot() {
         const newPosition = position.map((coord, i) => coord + vector[i]);
         useStore.setState({ position: newPosition });
+        useStore.setState({ colorclicked: colorname});
+        useStore.setState({ oldposition: oldpos });
     }
 
     useEffect(() => {

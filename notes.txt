@@ -1,0 +1,2 @@
+/home/ubuntu/anaconda3/envs/flask_env/lib/libstdc++.so.6.0.29
+export LD_LIBRARY_PATH=/home/ubuntu/anaconda3/envs/flask_env/lib/:$LD_LIBRARY_PATH
