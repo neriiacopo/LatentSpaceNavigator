@@ -1,13 +1,13 @@
 import { useStore } from "./store/useStore";
 
-export default function Thumbnail({ imageData, colorPalette, colorWheel, colorScheme, schemeError }) {
+export default function Thumbnail({ imageDifference, colorPalette, colorWheel, colorScheme, schemeError }) {
     
     const thumbS = {
         style: 'flex',    // Using flex for inner alignment
         justifyContent: 'center', 
     };
 
-    const imageUrl = imageData ? `data:image/png;base64,${imageData}` : null;
+    const imageUrl = imageDifference ? `data:image/png;base64,${imageDifference}` : null;
     const colorUrl = colorWheel ? `data:image/png;base64,${colorWheel}` : null;
     // const canvas = document.getElementById('colorWheel');
     // const ctx = canvas.getContext('2d');

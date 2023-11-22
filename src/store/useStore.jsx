@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 export let useStore = create((set, get) => ({
     position: [0, 0, 0],///[-1.94338412, -1.22391922,  0.32755781],
-    oldposition: Array(512).fill(0.8),
+    oldposition: Array(512).fill(0),
     colorclicked: '',
     vectors: {
         Brown: {

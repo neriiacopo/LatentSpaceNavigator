@@ -17,6 +17,7 @@ export default function App() {
     
     const vectors = useStore((state) => state.vectors);
     const [imageData, setImageData] = useState('');
+    const [imageDifference, setImageDifference] = useState('');
     const [colorWheel, setColorWheel] = useState('');
     const [colorPalette, setColorPalette] = useState('');
     const [colorScheme, setColorScheme] = useState('');
@@ -38,6 +39,7 @@ export default function App() {
                 const data = await response.json();
                 setImageData(data.imageData);
                 setOldPos(data.newPosition);
+                setImageDifference(data.differenceImage);
             } catch (error) {
                 console.error('Error fetching image:', error);
             }
@@ -80,7 +82,7 @@ export default function App() {
     return (
         <>
             <Info />
-            <Thumbnail imageData={imageData} colorPalette={colorPalette} colorWheel={colorWheel} 
+            <Thumbnail imageDifference={imageDifference} colorPalette={colorPalette} colorWheel={colorWheel} 
                         colorScheme={colorScheme} schemeError={schemeError} />
             
             <Canvas>

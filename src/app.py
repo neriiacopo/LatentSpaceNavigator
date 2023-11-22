@@ -13,7 +13,7 @@ import extcolors
 from colormap import rgb2hex
 import matplotlib.pyplot as plt
 from skimage.transform import resize
-from utils.color import hex2rgb, rgb2hsv, color_to_df
+from utils.color import hex2rgb, rgb2hsv, color_to_df, compute_hue_difference
 from utils.color_harmony import color_harmony
 import json
 import PIL
@@ -109,11 +109,14 @@ def get_image_as_base64(color, oldpos):
     else:
         vec = np.array(oldpos).reshape((1,512))
     new_position = [float(v) for v in list(vec.reshape(512))]
+    pil_old = generate_image(np.array(oldpos).reshape((1,512)))
     pil_img = generate_image(vec)
     byte_arr = io.BytesIO()
     pil_img.save(byte_arr, format='PNG')  # convert the PIL image to byte array
     encoded_img = base64.encodebytes(byte_arr.getvalue()).decode('ascii')  # encode as base64
-    return encoded_img, new_position
+    
+    diff_img = compute_hue_difference(pil_img, pil_old)  # encode as base64
+    return encoded_img, new_position, diff_img
 
 def get_color_as_base64(color, oldpos):
     if color != '':
@@ -130,8 +133,8 @@ def get_color_as_base64(color, oldpos):
 def send_image():
     input_data = request.json
     color, oldpos = input_data
-    encoded_img, new_position = get_image_as_base64(color, oldpos)
-    return jsonify(imageData=encoded_img, newPosition=new_position)
+    encoded_img, new_position, difference_image = get_image_as_base64(color, oldpos)
+    return jsonify(imageData=encoded_img, newPosition=new_position, differenceImage=difference_image)
 
 @app.route('/get-colors', methods=['POST'])
 def send_colors():
