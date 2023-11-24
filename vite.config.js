@@ -6,7 +6,7 @@ const isCodeSandbox =
 
 export default {
     plugins: [react(), topLevelAwait()],
-    root: "src",
+    root: "ui",
     publicDir: "public",
     base: "/LatentSpaceNavigator/",
     server: {
