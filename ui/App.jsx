@@ -18,7 +18,7 @@ export default function App() {
 
     return (
         <>
-            <Info />
+            {/* <Info /> */}
             <Canvas>
                 {/* <OrbitControls /> */}
                 <ambientLight intensity={1} />

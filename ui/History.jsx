@@ -1,15 +1,25 @@
-import { Sphere, useBounds } from "@react-three/drei";
-import { useStore } from "./store/useStore";
-import { useEffect, useRef } from "react";
-import * as THREE from "three";
 import { Html } from "@react-three/drei";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function History({ position }) {
-    const sphereRef = useRef();
-    const [histPositions, setPositions] = useState([]);
-    const [index, setIndex] = useState([0]);
+import { useStore } from "./store/useStore";
 
+export default function History() {
+    const gens = useStore((state) => state.gens);
+    const id = useStore((state) => state.id);
+
+    const histoGens = gens.filter((_, i) => i !== id);
+    console.log(histoGens);
+    return (
+        <>
+            {histoGens.length > 0 &&
+                histoGens.map((gen) => <HistoDot gen={gen} />)}
+        </>
+    );
+}
+
+function HistoDot({ gen }) {
+    const [lbl, showLbl] = useState(false);
+    const retroPick = useStore((state) => state.retroPick);
     const labelS = {
         padding: "10px",
         width: "20px",
@@ -19,43 +29,38 @@ export default function History({ position }) {
         color: "white",
     };
 
-    useEffect(() => {
-        const group = sphereRef.current;
+    const handleHover = (e) => {
+        e.stopPropagation();
+        showLbl(!lbl);
+    };
 
-        const sphere = new THREE.SphereGeometry(0.05, 4, 2);
-        const material = new THREE.MeshBasicMaterial({
-            color: "grey",
-            wireframe: true,
-        });
-        const mesh = new THREE.Mesh(sphere, material);
-        mesh.position.set(...position);
-
-        group.add(mesh);
-    }, [position]);
-
-    useEffect(() => {
-        const oldPos = histPositions;
-
-        oldPos.push(position);
-        setPositions(oldPos);
-
-        const nowInd = parseInt(index.slice(-1));
-        index.push(nowInd + 1);
-        setIndex(index);
-    }, [position]);
+    const pickDot = () => {
+        retroPick(gen.id);
+    };
 
     return (
         <>
-            <group ref={sphereRef} />
-            {histPositions.map((pos, i) => (
-                <Html
-                    position={[...pos]}
-                    style={{ ...labelS }}
-                    className="blurredBox"
-                >
-                    {index[i]}
-                </Html>
-            ))}
+            <Html
+                position={[...gen.position]}
+                style={{ ...labelS }}
+                className="blurredBox semi"
+            >
+                {gen.id}
+            </Html>
+
+            <sprite
+                onClick={pickDot}
+                position={gen.position}
+                scale={0.1}
+                onPointerOver={handleHover}
+                onPointerLeave={handleHover}
+            >
+                <spriteMaterial
+                    transparent={true}
+                    color="white"
+                    opacity={0.05}
+                />
+            </sprite>
         </>
     );
 }
