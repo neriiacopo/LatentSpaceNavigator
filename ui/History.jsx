@@ -8,11 +8,15 @@ export default function History() {
     const id = useStore((state) => state.id);
 
     const histoGens = gens.filter((_, i) => i !== id);
-    console.log(histoGens);
     return (
         <>
             {histoGens.length > 0 &&
-                histoGens.map((gen) => <HistoDot gen={gen} />)}
+                histoGens.map((gen, index) => (
+                    <HistoDot
+                        key={index}
+                        gen={gen}
+                    />
+                ))}
         </>
     );
 }
@@ -21,12 +25,13 @@ function HistoDot({ gen }) {
     const [lbl, showLbl] = useState(false);
     const retroPick = useStore((state) => state.retroPick);
     const labelS = {
-        padding: "10px",
-        width: "20px",
+        padding: "5px",
+        width: "10px",
         margin: "auto",
         textAlign: "center",
         borderRadius: "20px",
         color: "white",
+        fontSize: "10px",
     };
 
     const handleHover = (e) => {

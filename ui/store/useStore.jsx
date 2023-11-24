@@ -3,6 +3,7 @@ import { create } from "zustand";
 export let useStore = create((set, get) => ({
     history: [],
     vectors: {},
+    links: [], // [[a,b,color], [],...]
     cloud: {},
 
     id: 0,
@@ -34,11 +35,19 @@ export let useStore = create((set, get) => ({
         }));
     },
 
+    newLink: (link) => {
+        const links = [...get().links, link];
+        set((state) => ({
+            links,
+        }));
+    },
+
     calcNewId: () => {
         return get().gens.length;
     },
 
     newPick: async (pos512, pos3d, vector) => {
+        const generateWithVector = get().generateWithVector;
         const gen = await generateWithVector(null, pos3d, vector); // INSERIRE CHIAMATA API QUI - inputs: pos512 & (pos3D) &vector
 
         const newId = get().calcNewId();

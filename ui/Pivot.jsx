@@ -22,8 +22,9 @@ export default function Pivot({ position }) {
     function SphereArr({ mats }) {
         return (
             <>
-                {mats.map((mat) => (
+                {mats.map((mat, index) => (
                     <Sphere
+                        key={index}
                         position={position}
                         args={[0.1, 4, 2]}
                     >
@@ -35,7 +36,12 @@ export default function Pivot({ position }) {
     }
     return (
         <>
-            <SphereArr mats={mats} />
+            <sprite
+                position={position}
+                scale={0.5}
+                color="white"
+            ></sprite>
+            {/* <SphereArr mats={mats} /> */}
         </>
     );
 }

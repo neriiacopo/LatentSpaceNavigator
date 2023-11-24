@@ -9,6 +9,7 @@ import Pivot from "./Pivot.jsx";
 import Cloud from "./Cloud.jsx";
 import Arrow from "./Arrow.jsx";
 import History from "./History.jsx";
+import Lines from "./Lines.jsx";
 
 export default function App() {
     const id = useStore((state) => state.id);
@@ -29,6 +30,7 @@ export default function App() {
                     <Pivot position={position} />
                     {Object.keys(vectors).map((vec, index) => (
                         <Arrow
+                            key={index}
                             position={position}
                             index={index}
                             direction={vectors[vec].direction}
@@ -37,7 +39,7 @@ export default function App() {
                         />
                     ))}
                 </Bounds>
-
+                <Lines />
                 <History position={position} />
                 <Cloud />
             </Canvas>
