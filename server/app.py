@@ -72,22 +72,23 @@ def get_color_harmony_plot(colors):
     # Define your color hues in degrees
     color_hues = [rgb2hsv(*hex2rgb(col))[0] - 90 for col in colors]  # Example hues
     print(color_hues)
+    return color_hues
     # Convert degrees to radians and plot the radii
-    for i, hue in enumerate(color_hues):
-        # Calculate the end point of the radius
-        end_x = center_x + radius * np.cos(np.radians(hue))
-        end_y = center_y + radius * np.sin(np.radians(hue))
+    # for i, hue in enumerate(color_hues):
+    #     # Calculate the end point of the radius
+    #     end_x = center_x + radius * np.cos(np.radians(hue))
+    #     end_y = center_y + radius * np.sin(np.radians(hue))
 
-        # Plot a line from the center to the edge of the hue wheel
-        ax.plot([center_x, end_x], [center_y, end_y], 'w-', markersize=4)  # 'w-' specifies a white line
-        ax.plot([end_x], [end_y], color=colors[i], marker='o', markerfacecolor=colors[i], markersize=15)  # 'w-' specifies a white line
+    #     # Plot a line from the center to the edge of the hue wheel
+    #     ax.plot([center_x, end_x], [center_y, end_y], 'w-', markersize=4)  # 'w-' specifies a white line
+    #     ax.plot([end_x], [end_y], color=colors[i], marker='o', markerfacecolor=colors[i], markersize=15)  # 'w-' specifies a white line
     
-    # plt.savefig('test_small.png')
-    byte_arr_wheel = io.BytesIO()
-    plt.savefig(byte_arr_wheel, format='PNG')  # convert the PIL image to byte array
-    encoded_color_wheel = base64.encodebytes(byte_arr_wheel.getvalue()).decode('ascii')  # encode as base64
-    plt.close()
-    return encoded_color_wheel    
+    # # plt.savefig('test_small.png')
+    # byte_arr_wheel = io.BytesIO()
+    # plt.savefig(byte_arr_wheel, format='PNG')  # convert the PIL image to byte array
+    # encoded_color_wheel = base64.encodebytes(byte_arr_wheel.getvalue()).decode('ascii')  # encode as base64
+    # plt.close()
+    # return encoded_color_wheel    
 
 def get_colors_harmony_type(colors):
     color_hues = [rgb2hsv(*hex2rgb(col))[0] - 90 for col in colors]  # Example hues
@@ -125,24 +126,20 @@ def get_color_as_base64(color, oldpos):
         vec = np.array(oldpos).reshape((1,512))
     pil_img = generate_image(vec)
     color_palette = obtain_color_palette(pil_img)
-    encoded_color_wheel = get_color_harmony_plot(color_palette)
+    color_wheel = get_color_harmony_plot(color_palette)
     scheme, confidence = get_colors_harmony_type(color_palette)
-    return color_palette, encoded_color_wheel, scheme, confidence
+    return color_palette, color_wheel, scheme, confidence
 
 @app.route('/get-image', methods=['POST'])
 def send_image():
     input_data = request.json
     color, oldpos = input_data
     encoded_img, new_position, difference_image = get_image_as_base64(color, oldpos)
-    return jsonify(imageData=encoded_img, newPosition=new_position, differenceImage=difference_image)
+    color_palette, color_wheel, scheme, confidence = get_color_as_base64(color, oldpos)
+    return jsonify(texture=encoded_img, multiposition=new_position, map=difference_image,
+                   paltte=color_palette, compass={'type':scheme, 'angles':color_wheel})
 
-@app.route('/get-colors', methods=['POST'])
-def send_colors():
-    input_data = request.json
-    color, oldpos = input_data
-    color_palette, encoded_color_wheel, scheme, confidence = get_color_as_base64(color, oldpos)
-    return jsonify(colorPalette=color_palette, colorWheel=encoded_color_wheel, 
-                   colorScheme=scheme, schemeError=confidence)
+    
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
