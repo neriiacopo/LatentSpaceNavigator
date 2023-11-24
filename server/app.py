@@ -26,8 +26,8 @@ print(device)
 
 model_file = 'data/network-snapshot-005000.pkl'
 pca_file = 'data/pca.pkl'
-directions_3d_file = 'public/3d_directions.json'
-directions_512d_file = 'public/512d_directions.json'
+directions_3d_file = '../ui/public/3d_directions.json'
+directions_512d_file = '../ui/public/512d_directions.json'
 
 with dnnlib.util.open_url(model_file) as f:
      model = legacy.load_network_pkl(f)['G_ema'] # type: ignore

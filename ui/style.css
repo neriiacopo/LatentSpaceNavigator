@@ -8,7 +8,11 @@ body,
     background: linear-gradient(45deg, #000000, #222222);
 }
 
-.info {
+#info {
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    left: 0;
     margin: 25px;
     padding: 25px;
     width: 15vw;
@@ -21,17 +25,15 @@ body,
     backdrop-filter: blur(10px);
 }
 
-#info {
-    z-index: 100;
-    position: absolute;
-    top: 0;
-    left: 0;
+.blurredBox {
+    color: whitesmoke;
+    background-color: rgba(50, 50, 50, 0.4);
+    border: 1px solid #333333;
+    box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
 }
 
-#thumbnail {
-    z-index: 100;
-    position: fixed;
-    right: 0;
-    bottom: 0;        
-        
+.semi {
+    opacity: 0.5;
+    border: 2px solid #333333;
 }

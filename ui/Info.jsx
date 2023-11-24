@@ -1,6 +1,7 @@
 import { useStore } from "./store/useStore";
 export default function Info() {
-    const position = useStore((state) => state.position);
+    const id = useStore((state) => state.id);
+    const position = useStore((state) => state.gens[id].position);
 
     const coords = {};
     const axis = ["x", "y", "z"];
@@ -13,7 +14,7 @@ export default function Info() {
 
     return (
         <>
-            <div class="info" id="info">
+            <div id="info">
                 <h1>info</h1>
                 <div style={infoS}>
                     <h3>position </h3>
