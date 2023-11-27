@@ -23,7 +23,7 @@ export default function Arrow({ position, direction, color, scale }) {
             gens[id].position.map((coord, i) => coord + vector[i]),
             color,
         ]);
-        newPick(gens[id].multiposition, gens[id].position, vector);
+        newPick(gens[id].multiposition, gens[id].position, color, vector);
     }
 
     useEffect(() => {

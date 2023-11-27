@@ -28,6 +28,7 @@ model_file = 'data/network-snapshot-005000.pkl'
 pca_file = 'data/pca.pkl'
 directions_3d_file = '../ui/public/3d_directions.json'
 directions_512d_file = '../ui/public/512d_directions.json'
+points_512d_file = '../ui/public/512d_points.json'
 
 with dnnlib.util.open_url(model_file) as f:
      model = legacy.load_network_pkl(f)['G_ema'] # type: ignore
@@ -39,16 +40,19 @@ with open(directions_512d_file, "r") as infile:
     directions_512d = json.load(infile)
 with open(directions_3d_file, "r") as infile: 
     directions_3d = json.load(infile)
-
-
+with open(points_512d_file, "r") as infile: 
+    points_512d = json.load(infile)
+print(points_512d.keys())
+map_colors = {"#A52A2A":'brown', "#FFFF00":'yellow', "#00ff00":'green', "#00ffff":'cyan', "#0000ff":'blue', 
+              "#ff00ff":'magenta', "#aaaaaa":'grey', "#ff0000":'red'}
 # Define the root route
 @app.route('/')
 def home():
     return 'Welcome to the Flask App!'
 
-def convert_position(color, oldpos):
+def convert_position(color, oldpos, lambd=7):
     color512d = directions_512d[color]
-    position_512 = np.array(oldpos) + np.array(color512d)
+    position_512 = np.array(oldpos) + lambd * np.array(color512d)
     #position_512 = pca_reloaded.inverse_transform(np.array(position).reshape(1,-1))
     return position_512
 
@@ -61,18 +65,19 @@ def generate_image(vec):
     return PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB')    
             
 def get_color_harmony_plot(colors):
-    hue_wheel_image = plt.imread('public/Linear_RGB_color_wheel.png')
-    hue_wheel_image = resize(hue_wheel_image, (256,256))
-    # Display the hue wheel image
-    fig, ax = plt.subplots(dpi=80)
-    ax.imshow(hue_wheel_image)
-    ax.axis('off')  # Turn off axis
-    # Assuming the center of the hue wheel and the radius are known
-    center_x, center_y, radius = 128, 128, 126
-    # Define your color hues in degrees
-    color_hues = [rgb2hsv(*hex2rgb(col))[0] - 90 for col in colors]  # Example hues
+    color_hues = [rgb2hsv(*hex2rgb(col))[0] for col in colors]  # Example hues
     print(color_hues)
     return color_hues
+    # hue_wheel_image = plt.imread('public/Linear_RGB_color_wheel.png')
+    # hue_wheel_image = resize(hue_wheel_image, (256,256))
+    # # Display the hue wheel image
+    # fig, ax = plt.subplots(dpi=80)
+    # ax.imshow(hue_wheel_image)
+    # ax.axis('off')  # Turn off axis
+    # # Assuming the center of the hue wheel and the radius are known
+    # center_x, center_y, radius = 128, 128, 126
+    # # Define your color hues in degrees
+    
     # Convert degrees to radians and plot the radii
     # for i, hue in enumerate(color_hues):
     #     # Calculate the end point of the radius
@@ -105,7 +110,7 @@ def obtain_color_palette(img, n_colors=8):
     return colors
     
 def get_image_as_base64(color, oldpos):
-    if color != '':
+    if color is not None:
         vec = convert_position(color, oldpos).reshape((1,512))
     else:
         vec = np.array(oldpos).reshape((1,512))
@@ -117,14 +122,9 @@ def get_image_as_base64(color, oldpos):
     encoded_img = base64.encodebytes(byte_arr.getvalue()).decode('ascii')  # encode as base64
     
     diff_img = compute_hue_difference(pil_img, pil_old)  # encode as base64
-    return encoded_img, new_position, diff_img
+    return encoded_img, new_position, diff_img, pil_img
 
-def get_color_as_base64(color, oldpos):
-    if color != '':
-        vec = convert_position(color, oldpos).reshape((1,512))
-    else:
-        vec = np.array(oldpos).reshape((1,512))
-    pil_img = generate_image(vec)
+def get_color_as_base64(pil_img):
     color_palette = obtain_color_palette(pil_img)
     color_wheel = get_color_harmony_plot(color_palette)
     scheme, confidence = get_colors_harmony_type(color_palette)
@@ -133,12 +133,25 @@ def get_color_as_base64(color, oldpos):
 @app.route('/get-image', methods=['POST'])
 def send_image():
     input_data = request.json
-    color, oldpos = input_data
-    encoded_img, new_position, difference_image = get_image_as_base64(color, oldpos)
-    color_palette, color_wheel, scheme, confidence = get_color_as_base64(color, oldpos)
-    return jsonify(texture=encoded_img, multiposition=new_position, map=difference_image,
-                   paltte=color_palette, compass={'type':scheme, 'angles':color_wheel})
+    color, old_pos = input_data
+    color = map_colors[color]
+    encoded_img, new_position, difference_image, pil_img = get_image_as_base64(color, old_pos)
+    color_palette, color_wheel, scheme, confidence = get_color_as_base64(pil_img)
+    return jsonify(texture='data:image/png;base64,'+encoded_img, multiposition=new_position,
+                   map='data:image/png;base64,'+difference_image,
+                   palette=color_palette, compass={'type':scheme, 'angles':color_wheel})
 
+
+@app.route('/get-index', methods=['POST'])
+def send_index():
+    input_data = request.json
+    color, idx_point = input_data
+    oldpos = points_512d[color][int(idx_point)]
+    encoded_img, new_position, difference_image, pil_img = get_image_as_base64(None, oldpos)
+    color_palette, color_wheel, scheme, confidence = get_color_as_base64(pil_img)
+    return jsonify(texture='data:image/png;base64,'+encoded_img, multiposition=new_position, 
+                   map='data:image/png;base64,'+difference_image,
+                   palette=color_palette, compass={'type':scheme, 'angles':color_wheel})
     
 
 if __name__ == '__main__':

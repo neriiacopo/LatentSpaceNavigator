@@ -10,6 +10,7 @@ import Cloud from "./Cloud.jsx";
 import Arrow from "./Arrow.jsx";
 import History from "./History.jsx";
 import Lines from "./Lines.jsx";
+import Thumbnail from "./Thumbnail.jsx";
 
 export default function App() {
     const id = useStore((state) => state.id);
@@ -20,6 +21,7 @@ export default function App() {
     return (
         <>
             {/* <Info /> */}
+            <Thumbnail />
             <Canvas>
                 {/* <OrbitControls /> */}
                 <ambientLight intensity={1} />

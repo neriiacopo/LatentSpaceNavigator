@@ -8,11 +8,7 @@ body,
     background: linear-gradient(45deg, #000000, #222222);
 }
 
-#info {
-    position: absolute;
-    z-index: 100;
-    top: 0;
-    left: 0;
+.info {
     margin: 25px;
     padding: 25px;
     width: 15vw;
@@ -23,6 +19,21 @@ body,
     border: 1px solid #333333;
     box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
+}
+
+#info {
+    z-index: 100;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#thumbnail {
+    z-index: 100;
+    position: fixed;
+    right: 0;
+    bottom: 0;        
+        
 }
 
 .blurredBox {
