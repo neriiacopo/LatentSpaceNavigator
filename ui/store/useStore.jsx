@@ -94,7 +94,7 @@ export let useStore = create((set, get) => ({
     // test functions for local dev ---------------------------------------------------------------------------------------------------------------------
     generateWithVector: async (pos512, pos3d, color, vector) => {
         // Replace the following with API call values ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-        const response = await fetch("http://127.0.0.1:5000/get-image", {
+        const response = await fetch("http://130.60.24.190/get-image", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -112,7 +112,7 @@ export let useStore = create((set, get) => ({
         // Add info on 3Dspace
         const [key, id] = idCloud.split("/");
         // Replace the following with API call values ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
-        const response = await fetch("http://127.0.0.1:5000/get-index", {
+        const response = await fetch("http://130.60.24.190/get-index", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
