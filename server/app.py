@@ -43,8 +43,8 @@ with open(directions_3d_file, "r") as infile:
 with open(points_512d_file, "r") as infile: 
     points_512d = json.load(infile)
 print(points_512d.keys())
-map_colors = {"#A52A2A":'brown', "#FFFF00":'yellow', "#00ff00":'green', "#00ffff":'cyan', "#0000ff":'blue', 
-              "#ff00ff":'magenta', "#aaaaaa":'grey', "#ff0000":'red'}
+map_colors = {"#8a3324":'brown', "#FFFF00":'yellow', "#00ff00":'green', "#00ffff":'cyan', "#0000ff":'blue', 
+              "#a020f0":'magenta', "#aaaaaa":'grey', "#ff0000":'red'}
 # Define the root route
 @app.route('/')
 def home():
@@ -67,33 +67,32 @@ def generate_image(vec):
 def get_color_harmony_plot(colors):
     color_hues = [rgb2hsv(*hex2rgb(col))[0] for col in colors]  # Example hues
     print(color_hues)
-    return color_hues
-    # hue_wheel_image = plt.imread('public/Linear_RGB_color_wheel.png')
-    # hue_wheel_image = resize(hue_wheel_image, (256,256))
-    # # Display the hue wheel image
-    # fig, ax = plt.subplots(dpi=80)
-    # ax.imshow(hue_wheel_image)
-    # ax.axis('off')  # Turn off axis
-    # # Assuming the center of the hue wheel and the radius are known
-    # center_x, center_y, radius = 128, 128, 126
-    # # Define your color hues in degrees
+    hue_wheel_image = plt.imread('data/Linear_RGB_color_wheel.png')
+    hue_wheel_image = resize(hue_wheel_image, (256,256))
+    # Display the hue wheel image
+    fig, ax = plt.subplots(dpi=80)
+    ax.imshow(hue_wheel_image)
+    ax.axis('off')  # Turn off axis
+    # Assuming the center of the hue wheel and the radius are known
+    center_x, center_y, radius = 128, 128, 126
+    # Define your color hues in degrees
     
     # Convert degrees to radians and plot the radii
-    # for i, hue in enumerate(color_hues):
-    #     # Calculate the end point of the radius
-    #     end_x = center_x + radius * np.cos(np.radians(hue))
-    #     end_y = center_y + radius * np.sin(np.radians(hue))
+    for i, hue in enumerate(color_hues):
+        # Calculate the end point of the radius
+        end_x = center_x + radius * np.cos(np.radians(hue - 90))
+        end_y = center_y + radius * np.sin(np.radians(hue - 90))
 
-    #     # Plot a line from the center to the edge of the hue wheel
-    #     ax.plot([center_x, end_x], [center_y, end_y], 'w-', markersize=4)  # 'w-' specifies a white line
-    #     ax.plot([end_x], [end_y], color=colors[i], marker='o', markerfacecolor=colors[i], markersize=15)  # 'w-' specifies a white line
+        # Plot a line from the center to the edge of the hue wheel
+        ax.plot([center_x, end_x], [center_y, end_y], 'w-', markersize=4)  # 'w-' specifies a white line
+        ax.plot([end_x], [end_y], color=colors[i], marker='o', markerfacecolor=colors[i], markersize=15)  # 'w-' specifies a white line
     
-    # # plt.savefig('test_small.png')
-    # byte_arr_wheel = io.BytesIO()
-    # plt.savefig(byte_arr_wheel, format='PNG')  # convert the PIL image to byte array
-    # encoded_color_wheel = base64.encodebytes(byte_arr_wheel.getvalue()).decode('ascii')  # encode as base64
-    # plt.close()
-    # return encoded_color_wheel    
+    # plt.savefig('test_small.png')
+    byte_arr_wheel = io.BytesIO()
+    plt.savefig(byte_arr_wheel, format='PNG')  # convert the PIL image to byte array
+    encoded_color_wheel = base64.encodebytes(byte_arr_wheel.getvalue()).decode('ascii')  # encode as base64
+    plt.close()
+    return color_hues, encoded_color_wheel    
 
 def get_colors_harmony_type(colors):
     color_hues = [rgb2hsv(*hex2rgb(col))[0] - 90 for col in colors]  # Example hues
@@ -101,7 +100,7 @@ def get_colors_harmony_type(colors):
     print(f"The color scheme is {scheme} with an error of {confidence}")
     return scheme, confidence
 
-def obtain_color_palette(img, n_colors=8):
+def obtain_color_palette(img, n_colors=6):
     colors = extcolors.extract_from_image(img, tolerance=n_colors, limit=n_colors+1)
     df_color = color_to_df(colors)
     colors = list(df_color['c_code'])
@@ -126,9 +125,9 @@ def get_image_as_base64(color, oldpos):
 
 def get_color_as_base64(pil_img):
     color_palette = obtain_color_palette(pil_img)
-    color_wheel = get_color_harmony_plot(color_palette)
+    color_wheel, encoded_color_wheel = get_color_harmony_plot(color_palette)
     scheme, confidence = get_colors_harmony_type(color_palette)
-    return color_palette, color_wheel, scheme, confidence
+    return color_palette, color_wheel, scheme, confidence, encoded_color_wheel
 
 @app.route('/get-image', methods=['POST'])
 def send_image():
@@ -136,9 +135,9 @@ def send_image():
     color, old_pos = input_data
     color = map_colors[color]
     encoded_img, new_position, difference_image, pil_img = get_image_as_base64(color, old_pos)
-    color_palette, color_wheel, scheme, confidence = get_color_as_base64(pil_img)
+    color_palette, color_wheel, scheme, confidence, encoded_color_wheel = get_color_as_base64(pil_img)
     return jsonify(texture='data:image/png;base64,'+encoded_img, multiposition=new_position,
-                   map='data:image/png;base64,'+difference_image,
+                   map='data:image/png;base64,'+difference_image, paletteimg='data:image/png;base64,'+encoded_color_wheel,
                    palette=color_palette, compass={'type':scheme, 'angles':color_wheel})
 
 
@@ -148,9 +147,9 @@ def send_index():
     color, idx_point = input_data
     oldpos = points_512d[color][int(idx_point)]
     encoded_img, new_position, difference_image, pil_img = get_image_as_base64(None, oldpos)
-    color_palette, color_wheel, scheme, confidence = get_color_as_base64(pil_img)
+    color_palette, color_wheel, scheme, confidence, encoded_color_wheel = get_color_as_base64(pil_img)
     return jsonify(texture='data:image/png;base64,'+encoded_img, multiposition=new_position, 
-                   map='data:image/png;base64,'+difference_image,
+                   map='data:image/png;base64,'+difference_image, paletteimg='data:image/png;base64,'+encoded_color_wheel,
                    palette=color_palette, compass={'type':scheme, 'angles':color_wheel})
     
 

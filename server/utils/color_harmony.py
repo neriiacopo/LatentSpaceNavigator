@@ -5,14 +5,14 @@ import numpy as np
 def is_monochromatic(hues):
     confidence = np.mean([abs(hue - hues[0]) for hue in hues])
     corrects = sum([1 if abs(hue - hues[0]) < 10  else 0 for hue in hues])
-    correct = True if corrects >= (len(hues)-1) else False
+    correct = True if corrects >= (len(hues)) else False
     return correct,  np.round(confidence)
 
 # Function to check if the colors are analogous
 def is_analogous(hues):
     confidence = np.mean([abs(hue - hues[0]) for hue in hues])
     corrects = sum([1 if abs(hue - hues[0]) <= 60  else 0 for hue in hues])
-    correct = True if corrects >= (len(hues)-1) else False
+    correct = True if corrects >= (len(hues)) else False
     return correct,  np.round(confidence)
 
 # Function to check if the colors are complementary
@@ -23,24 +23,36 @@ def is_complementary(hues):
 # Function to check if the colors are triadic
 def is_triadic(hues):
     confidence = 0
-    count = 0
-    for hue, other_hue in combinations(hues, 2):
-        confidence += abs((hue - other_hue) % 360 - 120) 
-        count += 1
-        if abs((hue - other_hue) % 360 - 120) > 10:
-            return False, 0
-    return True, np.round(confidence/count)
+    for hue, other_hue, third_hue in combinations(hues, 3):
+        count = 0
+    
+        if abs((hue - other_hue) % 360 - 120) < 10:
+            count += 1
+        elif abs((third_hue - other_hue) % 360 - 120) < 10:
+            count += 1
+        elif abs((third_hue - hue) % 360 - 120) < 10:
+            count += 1
+        if count >= 2:
+            True, count
+        
+    return False, 0
 
 # Function to check if the colors are split complementary
 def is_split_complementary(hues):
     confidence = 0
-    count = 0
-    for hue, other_hue in combinations(hues, 2):
-        confidence += min(abs((hue - other_hue) % 360 - 150), abs((hue - other_hue) % 360 - 210))
-        count += 1
-        if not (abs((hue - other_hue) % 360 - 150) < 10 or abs((hue - other_hue) % 360 - 210) < 10):
-            return False, 0
-    return True, np.round(confidence/count)
+    for hue, other_hue, third_hue in combinations(hues, 3):
+        count = 0
+    
+        if (abs((hue - other_hue) % 360 - 150) < 10 or abs((hue - other_hue) % 360 - 210) < 10):
+            count += 1
+        elif (abs((hue - third_hue) % 360 - 150) < 10 or abs((hue - third_hue) % 360 - 210) < 10):
+            count += 1
+        elif (abs((third_hue - other_hue) % 360 - 150) < 10 or abs((third_hue - other_hue) % 360 - 210) < 10):
+            count += 1
+        if count >= 2:
+            True, count
+        
+    return False, 0
 
 # Function to check if the colors are double complementary
 def is_double_complementary(hues):

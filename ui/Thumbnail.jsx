@@ -14,6 +14,7 @@ export default function Thumbnail({}) {
 
     const id = useStore((state) => state.id);
     const imagedata = useStore((state) => state.gens[id].map);
+    const imagepalette = useStore((state) => state.gens[id].paletteimg);
     const colorPalette = useStore((state) => state.gens[id].palette);
     const colorScheme = useStore((state) => state.gens[id].compass.type);
     const hueValues = useStore((state) => state.gens[id].compass.angles);
@@ -99,7 +100,7 @@ export default function Thumbnail({}) {
                                     src={imagedata}
                                     alt="Loaded"
                                     width="100%"
-                                    height="100px"
+                                    height="100%"
                                     backgroundcolor="blue"
                                 />
                             ) : (
@@ -114,7 +115,21 @@ export default function Thumbnail({}) {
                         <p>
                             <b>{colorScheme}</b>
                         </p>
-                        <PolarPlot hueValues={hueValues} radius={10} />
+                        <div>
+                          {imagepalette ? (
+                                <img
+                                    src={imagepalette}
+                                    alt="Loaded"
+                                    width="100%"
+                                    height="100%"
+                                    backgroundcolor="blue"
+                                />
+                            ) : (
+                                <p>No image loaded</p>
+                            )}
+                        </div>
+                        
+                        {/* <PolarPlot hueValues={hueValues} radius={10} /> */}
                     </div>
                 </div>
             {/* </div> */}
