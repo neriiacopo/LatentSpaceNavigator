@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from PIL import Image
 import io
 import base64
@@ -130,6 +130,8 @@ def get_color_as_base64(pil_img):
     return color_palette, color_wheel, scheme, confidence, encoded_color_wheel
 
 @app.route('/get-image', methods=['POST'])
+@cross_origin(origins="https://neriiacopo.github.io")  # Specify the allowed origin
+
 def send_image():
     input_data = request.json
     color, old_pos = input_data
@@ -142,6 +144,8 @@ def send_image():
 
 
 @app.route('/get-index', methods=['POST'])
+@cross_origin(origins="https://neriiacopo.github.io")  # Specify the allowed origin
+
 def send_index():
     input_data = request.json
     color, idx_point = input_data

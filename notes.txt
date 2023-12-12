@@ -1,3 +1,6 @@
 /home/ubuntu/anaconda3/envs/flask_env/lib/libstdc++.so.6.0.29
 export LD_LIBRARY_PATH=/home/ubuntu/anaconda3/envs/flask_env/lib/:$LD_LIBRARY_PATH
 conda env create -f environment.yml
+sudo ss -tulwnp | grep :8000
+gunicorn -w 4 -b 0.0.0.0:8000 app:app
+sudo systemctl restart nginx
