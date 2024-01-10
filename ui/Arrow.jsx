@@ -1,9 +1,9 @@
-import { Cone } from "@react-three/drei";
+import { Cone, Text } from "@react-three/drei";
 import { useState, useRef, useEffect } from "react";
 import { useStore } from "./store/useStore";
 import * as THREE from "three";
 
-export default function Arrow({ position, direction, color, scale }) {
+export default function Arrow({ position, direction, color, scale, text }) {
     const [hovered, setHovered] = useState(false);
     const newPick = useStore((state) => state.newPick);
     const newLink = useStore((state) => state.newLink);
@@ -53,6 +53,13 @@ export default function Arrow({ position, direction, color, scale }) {
                         color={hovered ? darkerHex(color, 0.8) : color}
                     />
                 </Cone>
+                <Text
+                    position={[0, 0, 0.8]} // Adjust the position as needed
+                    fontSize={0.1}
+                    color={hovered ? darkerHex(color, 0.8) : color} // Change the color as needed
+                >
+                    {text}
+                </Text>
             </mesh>
         </>
     );

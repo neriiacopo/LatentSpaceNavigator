@@ -38,6 +38,7 @@ export default function App() {
                             direction={vectors[vec].direction}
                             color={vectors[vec].color}
                             scale={0.5}
+                            text={vectors[vec].text}
                         />
                     ))}
                 </Bounds>
