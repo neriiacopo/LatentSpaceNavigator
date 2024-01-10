@@ -44,7 +44,8 @@ with open(points_512d_file, "r") as infile:
     points_512d = json.load(infile)
 print(points_512d.keys())
 map_colors = {"#8a3324":'brown', "#FFFF00":'yellow', "#00ff00":'green', "#00ffff":'cyan', "#0000ff":'blue', 
-              "#a020f0":'magenta', "#aaaaaa":'grey', "#ff0000":'red'}
+              "#a020f0":'magenta', "#aaaaaa":'grey', "#ff0000":'red', '#dce1e3':'S1', '#7c7e80':'-S1', 
+              '#f7f9fa':'V1', '#404142':'-V1'}
 # Define the root route
 @app.route('/')
 def home():

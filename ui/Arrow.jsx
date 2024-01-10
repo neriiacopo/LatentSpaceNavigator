@@ -54,8 +54,8 @@ export default function Arrow({ position, direction, color, scale, text }) {
                     />
                 </Cone>
                 <Text
-                    position={[0, 0, 0.8]} // Adjust the position as needed
-                    fontSize={0.1}
+                    position={[0, 0.05, 1]} // Adjust the position as needed
+                    fontSize={0.05}
                     color={hovered ? darkerHex(color, 0.8) : color} // Change the color as needed
                 >
                     {text}
