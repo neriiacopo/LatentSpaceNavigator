@@ -53,6 +53,8 @@ def home():
 
 def convert_position(color, oldpos, lambd=7):
     color512d = directions_512d[color]
+    if '1' in color:
+        lambd = 2
     position_512 = np.array(oldpos) + lambd * np.array(color512d)
     #position_512 = pca_reloaded.inverse_transform(np.array(position).reshape(1,-1))
     return position_512
