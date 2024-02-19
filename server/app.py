@@ -24,17 +24,26 @@ CORS(app)
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(device)
 
+
+mapping = 'umap'
+
 model_file = 'data/network-snapshot-005000.pkl'
-pca_file = 'data/pca.pkl'
-directions_3d_file = '../ui/public/3d_directions.json'
-directions_512d_file = '../ui/public/512d_directions.json'
-points_512d_file = '../ui/public/512d_points.json'
+pca_file = f'data/{mapping}.pkl'
+directions_3d_file = f'../ui/public/{mapping}_3d_directions.json'
+directions_512d_file = f'../ui/public/{mapping}_512d_directions.json'
+points_512d_file = f'../ui/public/{mapping}_512d_points.json'
 
 with dnnlib.util.open_url(model_file) as f:
      model = legacy.load_network_pkl(f)['G_ema'] # type: ignore
 
 pca_reloaded = pickle.load(open(pca_file,'rb')) 
-start_vec = np.array([-1.94338412, -1.22391922,  0.32755781])
+
+if mapping == 'pca':
+    start_vec = np.array([-1.94338412, -1.22391922,  0.32755781])
+elif mapping == 'umap':
+    start_vec = np.array([7.237474, 4.3774915, 1.7516142])
+else: 
+    start_vec = np.zeros(3)
 
 with open(directions_512d_file, "r") as infile: 
     directions_512d = json.load(infile)
@@ -43,9 +52,11 @@ with open(directions_3d_file, "r") as infile:
 with open(points_512d_file, "r") as infile: 
     points_512d = json.load(infile)
 print(points_512d.keys())
-map_colors = {"#8a3324":'brown', "#FFFF00":'yellow', "#00ff00":'green', "#00ffff":'cyan', "#0000ff":'blue', 
-              "#a020f0":'magenta', "#aaaaaa":'grey', "#ff0000":'red', '#dce1e3':'S1', '#7c7e80':'-S1', 
+
+map_colors = {"#ff0000":'brown', "#FFFF00":'yellow', "#00ff00":'green', "#00ffff":'cyan', "#0000ff":'blue', 
+              "#4b0082":'magenta', "#aaaaaa":'grey', "#ff00ff":'red', '#dce1e3':'S1', '#7c7e80':'-S1', 
               '#f7f9fa':'V1', '#404142':'-V1'}
+
 # Define the root route
 @app.route('/')
 def home():
