@@ -17,7 +17,9 @@ from utils.color import hex2rgb, rgb2hsv, color_to_df, compute_hue_difference
 from utils.color_harmony import color_harmony
 import json
 import PIL
+import umap
 
+print('numpy version', np.__version__)
 app = Flask(__name__)
 CORS(app)
 
@@ -42,6 +44,8 @@ if mapping == 'pca':
     start_vec = np.array([-1.94338412, -1.22391922,  0.32755781])
 elif mapping == 'umap':
     start_vec = np.array([7.237474, 4.3774915, 1.7516142])
+elif mapping == 'umap_supervised':
+    start_vec = np.array([[0.9822496, 1.4814569, 13.169042]])
 else: 
     start_vec = np.zeros(3)
 
@@ -53,7 +57,7 @@ with open(points_512d_file, "r") as infile:
     points_512d = json.load(infile)
 print(points_512d.keys())
 
-map_colors = {"#ff0000":'brown', "#FFFF00":'yellow', "#00ff00":'green', "#00ffff":'cyan', "#0000ff":'blue', 
+map_colors = {"#ff0000":'brown', "#ffff00":'yellow', "#00ff00":'green', "#00ffff":'cyan', "#0000ff":'blue', 
               "#4b0082":'magenta', "#aaaaaa":'grey', "#ff00ff":'red', '#dce1e3':'S1', '#7c7e80':'-S1', 
               '#f7f9fa':'V1', '#404142':'-V1'}
 
@@ -149,7 +153,7 @@ def get_color_as_base64(pil_img):
 def send_image():
     input_data = request.json
     color, old_pos = input_data
-    color = map_colors[color]
+    color = map_colors[color.lower()]
     encoded_img, new_position, difference_image, pil_img = get_image_as_base64(color, old_pos)
     color_palette, color_wheel, scheme, confidence, encoded_color_wheel = get_color_as_base64(pil_img)
     return jsonify(texture='data:image/png;base64,'+encoded_img, multiposition=new_position,

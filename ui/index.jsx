@@ -24,4 +24,5 @@ async function Init() {
 
     useStore.setState({ vectors: vectors });
     useStore.setState({ cloud: cloud });
+    
 }
