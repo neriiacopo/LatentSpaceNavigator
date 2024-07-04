@@ -31,9 +31,9 @@ mapping = 'umap'
 
 model_file = 'data/network-snapshot-005000.pkl'
 pca_file = f'data/{mapping}.pkl'
-directions_3d_file = f'../ui/public/{mapping}_3d_directions.json'
-directions_512d_file = f'../ui/public/{mapping}_512d_directions.json'
-points_512d_file = f'../ui/public/{mapping}_512d_points.json'
+directions_3d_file = f'../ui/public/3d_{mapping}_directions.json'
+directions_512d_file = f'../ui/public/512d_{mapping}_directions.json'
+points_512d_file = f'../ui/public/512d_points.json'
 
 with dnnlib.util.open_url(model_file) as f:
      model = legacy.load_network_pkl(f)['G_ema'] # type: ignore
@@ -41,11 +41,9 @@ with dnnlib.util.open_url(model_file) as f:
 pca_reloaded = pickle.load(open(pca_file,'rb')) 
 
 if mapping == 'pca':
-    start_vec = np.array([-1.94338412, -1.22391922,  0.32755781])
+    start_vec = np.array([-1.94338412, -1.22391922,  0.32755781]) #to revise
 elif mapping == 'umap':
     start_vec = np.array([7.237474, 4.3774915, 1.7516142])
-elif mapping == 'umap_supervised':
-    start_vec = np.array([[0.9822496, 1.4814569, 13.169042]])
 else: 
     start_vec = np.zeros(3)
 

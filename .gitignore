@@ -3,6 +3,6 @@ package-lock.json
 yarn.lock
 dist
 __pycache__
-network-snapshot-005000.pkl
+network-snapshot-*
 .DS_Store
 umap.pkl

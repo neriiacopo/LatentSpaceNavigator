@@ -13,8 +13,8 @@ root.render(
 );
 
 async function Init() {
-    const vectors = await fetchJSON("./umap_3d_directions.json");
-    const cloud = await fetchJSON("./umap_3d_points.json");
+    const vectors = await fetchJSON("./3d_umap_directions.json");
+    const cloud = await fetchJSON("./3d_umap_points.json");
 
     async function fetchJSON(url) {
         let response = await fetch(url);
