@@ -29,7 +29,7 @@ print(device)
 
 mapping = 'umap'
 
-model_file = 'data/network-snapshot-005000.pkl'
+model_file = 'data/network-snapshot-014000.pkl'
 pca_file = f'data/{mapping}.pkl'
 directions_3d_file = f'../ui/public/3d_{mapping}_directions.json'
 directions_512d_file = f'../ui/public/512d_{mapping}_directions.json'
@@ -41,9 +41,9 @@ with dnnlib.util.open_url(model_file) as f:
 pca_reloaded = pickle.load(open(pca_file,'rb')) 
 
 if mapping == 'pca':
-    start_vec = np.array([-1.94338412, -1.22391922,  0.32755781]) #to revise
+    start_vec = np.array([0.76836109, -0.46504676, -0.04241134]) 
 elif mapping == 'umap':
-    start_vec = np.array([7.237474, 4.3774915, 1.7516142])
+    start_vec = np.array([7.502209, 5.23363, 7.22592])
 else: 
     start_vec = np.zeros(3)
 
@@ -55,9 +55,11 @@ with open(points_512d_file, "r") as infile:
     points_512d = json.load(infile)
 print(points_512d.keys())
 
-map_colors = {"#ff0000":'brown', "#ffff00":'yellow', "#00ff00":'green', "#00ffff":'cyan', "#0000ff":'blue', 
-              "#4b0082":'magenta', "#aaaaaa":'grey', "#ff00ff":'red', '#dce1e3':'S1', '#7c7e80':'-S1', 
-              '#f7f9fa':'V1', '#404142':'-V1'}
+with open(data_dir + '/quantized_colors_and_names.pkl', 'rb') as infile:
+    colors_dict = pickle.load(infile) 
+
+map_colors = {str(v):k for k,v in zip(colors_dict['names'], colors_dict['RGB'])}
+print(map_colors)
 
 # Define the root route
 @app.route('/')
