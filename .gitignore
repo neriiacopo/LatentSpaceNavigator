@@ -5,4 +5,3 @@ dist
 __pycache__
 network-snapshot-*
 .DS_Store
-umap.pkl
