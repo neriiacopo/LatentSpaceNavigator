@@ -31,9 +31,8 @@ mapping = 'umap'
 
 model_file = 'data/network-snapshot-014000.pkl'
 pca_file = f'data/{mapping}.pkl'
-directions_3d_file = f'../ui/public/3d_{mapping}_directions.json'
-directions_512d_file = f'../ui/public/512d_{mapping}_directions.json'
-points_512d_file = f'../ui/public/512d_points.json'
+directions = f'../ui/public/vector.json'
+points = f'../ui/public/cloud.json'
 
 with dnnlib.util.open_url(model_file) as f:
      model = legacy.load_network_pkl(f)['G_ema'] # type: ignore
@@ -47,18 +46,16 @@ elif mapping == 'umap':
 else: 
     start_vec = np.zeros(3)
 
-with open(directions_512d_file, "r") as infile: 
-    directions_512d = json.load(infile)
-with open(directions_3d_file, "r") as infile: 
-    directions_3d = json.load(infile)
-with open(points_512d_file, "r") as infile: 
-    points_512d = json.load(infile)
-print(points_512d.keys())
+with open(directions, "r") as infile: 
+    directions = json.load(infile)
+with open(points, "r") as infile: 
+    points = json.load(infile)
+print(points.keys())
 
-with open(data_dir + '/quantized_colors_and_names.pkl', 'rb') as infile:
+with open('data/quantized_colors_and_names.pkl', 'rb') as infile:
     colors_dict = pickle.load(infile) 
 
-map_colors = {str(v):k for k,v in zip(colors_dict['names'], colors_dict['RGB'])}
+map_colors = {rgb2hex(*(np.array(v)*255).astype(int)):k for k,v in zip(colors_dict['names'], colors_dict['RGB'])}
 print(map_colors)
 
 # Define the root route
@@ -67,7 +64,7 @@ def home():
     return 'Welcome to the Flask App!'
 
 def convert_position(color, oldpos, lambd=7):
-    color512d = directions_512d[color]
+    color512d = directions[color]['512d']
     if '1' in color:
         lambd = 2
     position_512 = np.array(oldpos) + lambd * np.array(color512d)
@@ -84,7 +81,6 @@ def generate_image(vec):
             
 def get_color_harmony_plot(colors):
     color_hues = [rgb2hsv(*hex2rgb(col))[0] for col in colors]  # Example hues
-    print(color_hues)
     hue_wheel_image = plt.imread('data/Linear_RGB_color_wheel.png')
     hue_wheel_image = resize(hue_wheel_image, (256,256))
     # Display the hue wheel image
@@ -167,7 +163,7 @@ def send_image():
 def send_index():
     input_data = request.json
     color, idx_point = input_data
-    oldpos = points_512d[color][int(idx_point)]
+    oldpos = points[color][int(idx_point)]['512d']
     encoded_img, new_position, difference_image, pil_img = get_image_as_base64(None, oldpos)
     color_palette, color_wheel, scheme, confidence, encoded_color_wheel = get_color_as_base64(pil_img)
     return jsonify(texture='data:image/png;base64,'+encoded_img, multiposition=new_position, 
