@@ -1,0 +1,8 @@
+{
+    "texture": "data:image/png;base64,...",
+    "map": "data:image/png;base64,...",
+    "palette": [null, null, null, null, null],
+    "compass": { "type": "", "angles": [null, null, null, null, null] },
+    "multiposition": [],
+    "position": [null, null, null]
+}
