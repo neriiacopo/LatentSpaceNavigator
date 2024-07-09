@@ -21,7 +21,9 @@ import umap
 
 print('numpy version', np.__version__)
 app = Flask(__name__)
-CORS(app)
+# CORS(app)
+CORS(app, resources={r"/*": {"origins": ["https://neriiacopo.github.io", "http://localhost:5173"]}})
+
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(device)
@@ -144,7 +146,7 @@ def get_color_as_base64(pil_img):
     return color_palette, color_wheel, scheme, confidence, encoded_color_wheel
 
 @app.route('/get-image', methods=['POST'])
-@cross_origin(origins="https://neriiacopo.github.io")  # Specify the allowed origin
+# @cross_origin(origins="https://neriiacopo.github.io")  # Specify the allowed origin
 
 def send_image():
     input_data = request.json
@@ -158,7 +160,7 @@ def send_image():
 
 
 @app.route('/get-index', methods=['POST'])
-@cross_origin(origins="https://neriiacopo.github.io")  # Specify the allowed origin
+# @cross_origin(origins="https://neriiacopo.github.io")  # Specify the allowed origin
 
 def send_index():
     input_data = request.json
