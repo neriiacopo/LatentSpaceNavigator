@@ -5,14 +5,15 @@ import { useStore } from "./store/useStore";
 
 export default function Cloud() {
     const cloud = useStore((state) => state.cloud);
+    const mode3d = useStore((state) => state.mode3d);
 
     return (
         <>
             {Object.keys(cloud).map((key) =>
-                cloud[key].map((coords, index) => (
+                cloud[key].cloud.map((pt, index) => (
                     <Dot
                         key={index}
-                        position={coords}
+                        position={pt["3d"][mode3d]}
                         color={key}
                         idCloud={`${key}/${index}`}
                     />

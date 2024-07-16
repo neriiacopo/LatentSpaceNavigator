@@ -1,6 +1,6 @@
 body,
 #root {
-    font-family: Manrope;
+    font-family: Manrope !important;
     margin: 0;
     padding: 0;
     width: 100vw;
@@ -8,7 +8,11 @@ body,
     background: linear-gradient(45deg, #000000, #222222);
 }
 
-.info {
+#info {
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    left: 0;
     margin: 25px;
     padding: 25px;
     width: 15vw;
@@ -19,21 +23,6 @@ body,
     border: 1px solid #333333;
     box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
-}
-
-#info {
-    z-index: 100;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-#thumbnail {
-    z-index: 100;
-    position: fixed;
-    right: 0;
-    bottom: 0;        
-        
 }
 
 .blurredBox {
@@ -47,4 +36,29 @@ body,
 .semi {
     opacity: 0.5;
     border: 2px solid #333333;
+}
+
+*::-webkit-scrollbar {
+    width: 0.5em;
+}
+
+*::-webkit-scrollbar-track {
+    background-color: transparent;
+    /* border-left: #818181 0.5px solid; */
+}
+
+*::-webkit-scrollbar-thumb {
+    /* background-color: black; */
+    background-color: white;
+    border-radius: 0.5em;
+    /* border-radius: 1em; */
+    padding-left: 20px;
+
+    border: 1px solid #333333;
+    box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background-color: #222;
 }

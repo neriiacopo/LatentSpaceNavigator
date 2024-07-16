@@ -1,20 +1,26 @@
 import "./style.css";
 import ReactDOM from "react-dom/client";
 const root = ReactDOM.createRoot(document.querySelector("#root"));
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "./theme.js";
 
 import App from "./App";
 import { useStore } from "./store/useStore";
 
 Init();
+
 root.render(
     <>
-        <App />
+        <ThemeProvider theme={theme}>
+            <App />
+        </ThemeProvider>
     </>
 );
 
 async function Init() {
-    const vectors = await fetchJSON("./3d_umap_directions.json");
-    const cloud = await fetchJSON("./3d_umap_points.json");
+    const vectors = await fetchJSON("./vectors.json");
+    const cloud = await fetchJSON("./cloud.json");
+    // const colors = await fetchJSON("./colorsDummy.json"); // <------------------ substitute with call
 
     async function fetchJSON(url) {
         let response = await fetch(url);
@@ -22,7 +28,7 @@ async function Init() {
         return await promise;
     }
 
-    useStore.setState({ vectors: vectors });
-    useStore.setState({ cloud: cloud });
-    
+    const colors = Object.keys(vectors);
+
+    useStore.setState({ vectors, cloud, colors });
 }

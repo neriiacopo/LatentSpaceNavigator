@@ -165,7 +165,7 @@ def send_image():
 def send_index():
     input_data = request.json
     color, idx_point = input_data
-    oldpos = points[color][int(idx_point)]['512d']
+    oldpos = points[color].cloud[int(idx_point)]['512d']
     encoded_img, new_position, difference_image, pil_img = get_image_as_base64(None, oldpos)
     color_palette, color_wheel, scheme, confidence, encoded_color_wheel = get_color_as_base64(pil_img)
     return jsonify(texture='data:image/png;base64,'+encoded_img, multiposition=new_position, 

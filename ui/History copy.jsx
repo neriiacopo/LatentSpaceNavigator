@@ -4,7 +4,7 @@ import { useThree } from "@react-three/fiber";
 
 import { useStore } from "./store/useStore";
 
-export default function History({}) {
+export default function History({ occlude }) {
     const gens = useStore((state) => state.gens);
     const id = useStore((state) => state.id);
 
@@ -16,13 +16,14 @@ export default function History({}) {
                     <HistoDot
                         key={index}
                         gen={gen}
+                        occlude={occlude}
                     />
                 ))}
         </>
     );
 }
 
-function HistoDot({ gen }) {
+function HistoDot({ gen, occlude }) {
     const [lbl, showLbl] = useState(false);
     const retroPick = useStore((state) => state.retroPick);
     const labelS = {
