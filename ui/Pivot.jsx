@@ -3,14 +3,11 @@ import { useStore } from "./store/useStore";
 import { useEffect, forwardRef, useState } from "react";
 import { useLoader } from "@react-three/fiber";
 
-import { useFrame } from "@react-three/fiber";
-
 import * as THREE from "three";
 
 export default function Pivot({ position }) {
     const gens = useStore((state) => state.gens);
     const id = useStore((state) => state.id);
-    const [focus, setFocus] = useState(null);
 
     const thumbSize = useStore((state) => state.thumbSize);
 

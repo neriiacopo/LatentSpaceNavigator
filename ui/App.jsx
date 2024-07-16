@@ -1,6 +1,5 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef, useState, useLayoutEffect, useEffect } from "react";
-import { Vector3 } from "three";
 import { OrbitControls, Bounds, Box } from "@react-three/drei";
 import { useStore } from "./store/useStore.jsx";
 
@@ -27,7 +26,6 @@ export default function App() {
         }
 
         const id = getRandomInt(100);
-        console.log(`#FFFFFF/${id}`);
         cloudPick(`#FFFFFF/${id}`);
     }, []);
 
