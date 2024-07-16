@@ -18,9 +18,8 @@ root.render(
 );
 
 async function Init() {
-    const vectors = await fetchJSON("./vectors.json");
+    const vectors = await fetchJSON("./vector.json");
     const cloud = await fetchJSON("./cloud.json");
-    // const colors = await fetchJSON("./colorsDummy.json"); // <------------------ substitute with call
 
     async function fetchJSON(url) {
         let response = await fetch(url);
