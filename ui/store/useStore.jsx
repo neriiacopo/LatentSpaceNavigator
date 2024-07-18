@@ -26,12 +26,13 @@ export let useStore = create((set, get) => ({
     vecF: 1,
     infoW: "25vw",
     loading: false,
+    lens: "image",
 
     colors: {},
     thumbSize: 0.5,
     dev: false,
     id: 0,
-    gens: [dummy],
+    gens: [],
 
     x: 0,
     fn: async (a) => {
@@ -130,22 +131,19 @@ export let useStore = create((set, get) => ({
         }));
     },
 
-    // const removeElementById = (cloud, targetId) => {
-    //     // Iterate over each key in the cloud object
-    //     Object.keys(cloud).forEach(color => {
-    //         // Check if the 'cloud' key exists and is an array
-    //         if (Array.isArray(cloud[color].cloud)) {
-    //             // Filter out the elements with the matching id
-    //             cloud[color].cloud = cloud[color].cloud.filter(element => element.id !== targetId);
-    //         }
-    //     });
-    //     return cloud;
-    // };
-
     retroPick: async (idImgs) => {
         set((state) => ({
             id: idImgs,
         }));
+    },
+
+    resetLens: () => {
+        const lens = get().lens;
+        if (lens != "image") {
+            set((state) => ({
+                lens: "image",
+            }));
+        }
     },
 
     // test functions for local dev ---------------------------------------------------------------------------------------------------------------------

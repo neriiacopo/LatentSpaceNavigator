@@ -11,6 +11,7 @@ export default function Extra() {
     const id = useStore((state) => state.id);
     const [focus, setFocus] = useState(null);
     const w = useStore((state) => state.infoW);
+    const lens = useStore((state) => state.lens);
 
     useEffect(() => {
         setFocus(gens[id]);
@@ -31,7 +32,10 @@ export default function Extra() {
                 justifyContent: "center",
                 alignItems: "center",
                 pointerEvents: "none",
+                visibility: lens == "image" ? "visible" : "hidden",
+                opacity: lens == "image" ? 1 : 0,
             }}
+            className="fx"
         >
             <Grid
                 xs={12}
@@ -172,6 +176,9 @@ function ColorIcon({ color }) {
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
+                    border: showIcon
+                        ? "2px solid white"
+                        : "2px solid transparent",
                 }}
                 onClick={handleDivClick}
                 className="blurredBox"

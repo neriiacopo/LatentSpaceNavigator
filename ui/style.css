@@ -38,6 +38,10 @@ body,
     border: 2px solid #333333;
 }
 
+.fx {
+    transition: all 0.1s ease-in;
+}
+
 *::-webkit-scrollbar {
     width: 0.5em;
 }

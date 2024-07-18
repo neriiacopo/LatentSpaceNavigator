@@ -26,6 +26,8 @@ export default function Cloud() {
 function Dot({ position, color, idCloud }) {
     const [lbl, showLbl] = useState(false);
     const cloudPick = useStore((state) => state.cloudPick);
+    const lens = useStore((state) => state.lens);
+    const resetLens = useStore((state) => state.resetLens);
 
     const labelS = {
         width: "80px",
@@ -36,12 +38,19 @@ function Dot({ position, color, idCloud }) {
     };
 
     const handleHover = (e) => {
+        const cursor = document.body.style.cursor;
+        if (cursor == "pointer") {
+            document.body.style.cursor = "default";
+        } else {
+            document.body.style.cursor = "pointer";
+        }
         e.stopPropagation();
         showLbl(!lbl);
     };
 
     const pickDot = () => {
         cloudPick(idCloud);
+        resetLens();
     };
 
     return (
