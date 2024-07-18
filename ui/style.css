@@ -52,6 +52,7 @@ body,
 }
 
 *::-webkit-scrollbar-thumb {
+    cursor: pointer;
     /* background-color: black; */
     background-color: white;
     border-radius: 0.5em;
@@ -61,8 +62,10 @@ body,
     border: 1px solid #333333;
     box-shadow: 5px 5px 10px 0px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(10px);
+    opacity: 1;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-    background-color: #222;
+    background-color: lightgrey;
+    opacity: 0.3;
 }
