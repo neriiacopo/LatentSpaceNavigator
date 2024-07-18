@@ -101,15 +101,13 @@ export default function GenList() {
                                 justifyContent: "flex-start",
                             }}
                         >
-                            {gens.map((g, i) =>
-                                gens.map((gen, i) => (
-                                    <Thumbnail
-                                        key={i}
-                                        gen={gen}
-                                        w={imgW}
-                                    />
-                                ))
-                            )}
+                            {gens.map((gen, i) => (
+                                <Thumbnail
+                                    key={i}
+                                    gen={gen}
+                                    w={imgW}
+                                />
+                            ))}
                         </Box>
                     </Stack>
                     <IconButton
