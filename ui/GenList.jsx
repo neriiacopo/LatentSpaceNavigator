@@ -38,7 +38,7 @@ export default function GenList() {
         if (box && stack) {
             const w = stack.offsetWidth - 10;
             box.style.width = w + "px";
-            box.style.maxHeight = w + "px";
+            box.style.maxHeight = w - 10 + 2 + "px";
 
             setImgW((w - 20) / 3);
         }
@@ -101,13 +101,15 @@ export default function GenList() {
                                 justifyContent: "flex-start",
                             }}
                         >
-                            {gens.map((gen, i) => (
-                                <Thumbnail
-                                    key={i}
-                                    gen={gen}
-                                    w={imgW}
-                                />
-                            ))}
+                            {gens.map((g, i) =>
+                                gens.map((gen, i) => (
+                                    <Thumbnail
+                                        key={i}
+                                        gen={gen}
+                                        w={imgW}
+                                    />
+                                ))
+                            )}
                         </Box>
                     </Stack>
                     <IconButton
