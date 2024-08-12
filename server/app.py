@@ -13,7 +13,7 @@ import extcolors
 from colormap import rgb2hex
 import matplotlib.pyplot as plt
 from skimage.transform import resize
-from utils.color import hex2rgb, rgb2hsv, color_to_df, compute_hue_difference
+from utils.color import hex2rgb, rgb2hsv, color_to_df, compute_hue_difference, extract_palette
 from utils.color_harmony import color_harmony
 import json
 import PIL
@@ -76,13 +76,13 @@ def convert_position(color, oldpos, lambd=7):
 def generate_image(vec):
     G = model.to(device) # type: ignore
     label = torch.zeros([1, G.c_dim], device=device)
-    W = torch.from_numpy(np.repeat(vec, 16, axis=0).reshape(1, 16, 512).copy()).to(device)
+    W = torch.from_numpy(np.repeat(vec, 14, axis=0).reshape(1, 14, 512).copy()).to(device)
     img = G.synthesis(W, noise_mode='const')
     img = (img.permute(0, 2, 3, 1) * 127.5 + 128).clamp(0, 255).to(torch.uint8)
     return PIL.Image.fromarray(img[0].cpu().numpy(), 'RGB')    
             
 def get_color_harmony_plot(colors):
-    color_hues = [rgb2hsv(*hex2rgb(col))[0] for col in colors]  # Example hues
+    color_hues = [rgb2hsv(*col)[0] for col in colors[0]]  # Example hues
     hue_wheel_image = plt.imread('data/Linear_RGB_color_wheel.png')
     hue_wheel_image = resize(hue_wheel_image, (256,256))
     # Display the hue wheel image
@@ -101,7 +101,7 @@ def get_color_harmony_plot(colors):
 
         # Plot a line from the center to the edge of the hue wheel
         ax.plot([center_x, end_x], [center_y, end_y], 'w-', markersize=4)  # 'w-' specifies a white line
-        ax.plot([end_x], [end_y], color=colors[i], marker='o', markerfacecolor=colors[i], markersize=15)  # 'w-' specifies a white line
+        ax.plot([end_x], [end_y], color=colors[0][i], marker='o', markerfacecolor=colors[0][i], markersize=15)  # 'w-' specifies a white line
     
     # plt.savefig('test_small.png')
     byte_arr_wheel = io.BytesIO()
@@ -111,18 +111,10 @@ def get_color_harmony_plot(colors):
     return color_hues, encoded_color_wheel    
 
 def get_colors_harmony_type(colors):
-    color_hues = [rgb2hsv(*hex2rgb(col))[0] - 90 for col in colors]  # Example hues
+    color_hues = [rgb2hsv(*col)[0] - 90 for col in colors[0]]  # Example hues
     scheme, confidence = color_harmony(color_hues)
     print(f"The color scheme is {scheme} with an error of {confidence}")
     return scheme, confidence
-
-def obtain_color_palette(img, n_colors=6):
-    colors = extcolors.extract_from_image(img, tolerance=n_colors, limit=n_colors+1)
-    df_color = color_to_df(colors)
-    colors = list(df_color['c_code'])
-    if '#000000' in colors:
-        colors.remove('#000000')
-    return colors
     
 def get_image_as_base64(color, oldpos):
     if color is not None:
@@ -140,7 +132,7 @@ def get_image_as_base64(color, oldpos):
     return encoded_img, new_position, diff_img, pil_img
 
 def get_color_as_base64(pil_img):
-    color_palette = obtain_color_palette(pil_img)
+    color_palette = extract_palette(pil_img, K=5)
     color_wheel, encoded_color_wheel = get_color_harmony_plot(color_palette)
     scheme, confidence = get_colors_harmony_type(color_palette)
     return color_palette, color_wheel, scheme, confidence, encoded_color_wheel
@@ -151,12 +143,12 @@ def get_color_as_base64(pil_img):
 def send_image():
     input_data = request.json
     color, old_pos = input_data
-    color = map_colors[color.lower()]
+    # color = map_colors[color]
     encoded_img, new_position, difference_image, pil_img = get_image_as_base64(color, old_pos)
     color_palette, color_wheel, scheme, confidence, encoded_color_wheel = get_color_as_base64(pil_img)
     return jsonify(texture='data:image/png;base64,'+encoded_img, multiposition=new_position,
                    map='data:image/png;base64,'+difference_image, paletteimg='data:image/png;base64,'+encoded_color_wheel,
-                   palette=color_palette, compass={'type':scheme, 'angles':color_wheel})
+                   palette=[rgb2hex(*list(col.astype(int))) for col in color_palette[0] * 255], compass={'type':scheme, 'angles':color_wheel})
 
 
 @app.route('/get-index', methods=['POST'])
@@ -165,12 +157,12 @@ def send_image():
 def send_index():
     input_data = request.json
     color, idx_point = input_data
-    oldpos = points[color].cloud[int(idx_point)]['512d']
+    oldpos = points[color]['cloud'][int(idx_point)]['512d']
     encoded_img, new_position, difference_image, pil_img = get_image_as_base64(None, oldpos)
     color_palette, color_wheel, scheme, confidence, encoded_color_wheel = get_color_as_base64(pil_img)
     return jsonify(texture='data:image/png;base64,'+encoded_img, multiposition=new_position, 
                    map='data:image/png;base64,'+difference_image, paletteimg='data:image/png;base64,'+encoded_color_wheel,
-                   palette=color_palette, compass={'type':scheme, 'angles':color_wheel})
+                   palette=[rgb2hex(*list(col.astype(int))) for col in color_palette[0] * 255], compass={'type':scheme, 'angles':color_wheel})
     
 
 if __name__ == '__main__':

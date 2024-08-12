@@ -3,6 +3,15 @@ from colormap import rgb2hex
 from PIL import Image
 import io
 import base64
+from itertools import combinations
+import numpy as np
+from colormath.color_objects import sRGBColor, LabColor
+from colormath.color_conversions import convert_color
+from colormath.color_diff import delta_e_cie1994, delta_e_cie1976
+import colorsys
+import sys
+from sklearn.cluster import KMeans
+import cv2
 
 def hex2rgb(hex_value):
     h = hex_value.strip("#") 
@@ -84,3 +93,52 @@ def compute_hue_difference(image1, image2):
     diff_img.save(byte_arr_diff, format='PNG')  # convert the PIL image to byte array
     encoded_diff = base64.encodebytes(byte_arr_diff.getvalue()).decode('ascii')
     return encoded_diff
+
+
+def adaptive_clustering_2(image_path, K=8, max_iterations=100, convergence_threshold=0.01):
+    # Load the image in RGB
+    if type(image_path) == str:
+        image = cv2.imread(image_path, cv2.IMREAD_COLOR)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    else:
+        image = np.array(image_path)
+    
+    original_shape = image.shape
+    # Flatten the image to a 2D array of pixels (3 columns for R, G, B)
+    pixels = image.reshape(-1, 3)
+    if np.isnan(pixels).any() or (pixels == 0).all():
+        print("Data contains NaN values")
+        print(image_path)
+        return np.array([(0,0,0)]*K), [len(pixels)]*K
+    
+    # Initial K-means to segment the image
+    kmeans = KMeans(n_clusters=K, random_state=0)
+    labels = kmeans.fit_predict(pixels)
+    centroids = kmeans.cluster_centers_
+
+    old_labels = labels
+
+    # Adaptive iteration
+    n_iterations = 0
+    while n_iterations < max_iterations:
+        # Recalculate centroids from labels
+        centroids = np.array([pixels[labels == i].mean(axis=0) for i in range(K)])
+
+        # Re-cluster using updated centroids
+        kmeans = KMeans(n_clusters=K, init=centroids, n_init=1)
+        labels = kmeans.fit_predict(pixels)
+
+        # Check for convergence
+        if np.sum(labels != old_labels) < convergence_threshold * len(pixels):
+            break
+
+        old_labels = labels
+        n_iterations += 1
+
+    cnts = np.array([len(pixels[labels == i]) for i in range(K)])
+    
+    return np.array(centroids) / 255, cnts
+
+def extract_palette(image_path, K, method=adaptive_clustering_2):
+    #extcolors.extract_from_path(im, tolerance=K, limit=13)
+    return method(image_path, K)

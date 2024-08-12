@@ -1,6 +1,54 @@
 from itertools import combinations
 import numpy as np
 
+def adaptive_clustering_2(image_path, K=8, max_iterations=100, convergence_threshold=0.01):
+    # Load the image in RGB
+    if type(image_path) == str:
+        image = cv2.imread(image_path, cv2.IMREAD_COLOR)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    else:
+        image = np.array(image_path)
+    
+    original_shape = image.shape
+    # Flatten the image to a 2D array of pixels (3 columns for R, G, B)
+    pixels = image.reshape(-1, 3)
+    if np.isnan(pixels).any() or (pixels == 0).all():
+        print("Data contains NaN values")
+        print(image_path)
+        return np.array([(0,0,0)]*K), [len(pixels)]*K
+    
+    # Initial K-means to segment the image
+    kmeans = KMeans(n_clusters=K, random_state=0)
+    labels = kmeans.fit_predict(pixels)
+    centroids = kmeans.cluster_centers_
+
+    old_labels = labels
+
+    # Adaptive iteration
+    n_iterations = 0
+    while n_iterations < max_iterations:
+        # Recalculate centroids from labels
+        centroids = np.array([pixels[labels == i].mean(axis=0) for i in range(K)])
+
+        # Re-cluster using updated centroids
+        kmeans = KMeans(n_clusters=K, init=centroids, n_init=1)
+        labels = kmeans.fit_predict(pixels)
+
+        # Check for convergence
+        if np.sum(labels != old_labels) < convergence_threshold * len(pixels):
+            break
+
+        old_labels = labels
+        n_iterations += 1
+
+    cnts = np.array([len(pixels[labels == i]) for i in range(K)])
+    
+    return np.array(centroids) / 255, cnts
+
+def extract_palette(image_path, K=5, method=adaptive_clustering_2):
+    #extcolors.extract_from_path(im, tolerance=K, limit=13)
+    return method(image_path, K)
+
 # Function to check if the colors are monochromatic
 def is_monochromatic(hues):
     confidence = np.mean([abs(hue - hues[0]) for hue in hues])
@@ -59,6 +107,7 @@ def is_double_complementary(hues):
         if count >= 2: 
             return True, np.round(amount / count)
     return False, 0
+
 
 # Main function to determine the color harmony scheme
 def color_harmony(hues):
