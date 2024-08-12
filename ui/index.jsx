@@ -18,8 +18,11 @@ root.render(
 );
 
 async function Init() {
-    const vectors = await fetchJSON("./vector.json");
-    const cloud = await fetchJSON("./cloud.json");
+    // temporary data retrieval
+    const source =
+        "https://raw.githubusercontent.com/neriiacopo/LatentSpaceNavigator/main/ui/public/";
+    const vectors = await fetchJSON(source + "vector.json");
+    const cloud = await fetchJSON(source + "cloud.json");
 
     async function fetchJSON(url) {
         let response = await fetch(url);
